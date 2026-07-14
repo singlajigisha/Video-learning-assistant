@@ -27,6 +27,11 @@ const potProvider = spawn("bgutil-pot-provider", [], {
   stdio: "ignore",
 });
 potProvider.unref();
+potProvider.on("error", (err) => {
+  console.error("PO Token provider failed to start:", err.message);
+});
+console.log("PO Token provider spawn attempted");
+
 
 // ---- Upload/ingest a video ----
 app.post('/api/videos/upload', async (req, res) => {
