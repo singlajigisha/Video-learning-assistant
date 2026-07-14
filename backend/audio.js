@@ -55,6 +55,7 @@ async function downloadAudio(youtubeUrl, videoId) {
     audioFormat: "mp3",
     output: outputTemplate,
     cookies: path.join(process.cwd(), "cookies.txt"),
+    extractorArgs: "youtube:player_client=android",
   });
 
   return path.join(tempDir, `${videoId}.mp3`);
