@@ -2,8 +2,15 @@ import 'dotenv/config';
 import express from 'express';
 import { ingestVideo , ingestUploadedVideo} from './main.js';
 import multer from 'multer';
+import fs from 'fs';         
+import path from 'path';  
 import { answerQuestion } from './query.js';
 import cors from 'cors';
+
+if (process.env.YT_COOKIES) {
+  fs.writeFileSync(path.join(process.cwd(), "cookies.txt"), process.env.YT_COOKIES);
+  console.log("cookies.txt created from env variable");
+}
 
 const app = express();
 app.use(cors());
