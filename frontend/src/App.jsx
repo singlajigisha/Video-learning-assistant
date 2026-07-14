@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-const API_BASE = "http://localhost:3000/api/videos";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 function SummaryDisplay({ summary }) {
-  const cleaned = summary.replace(/[`#*]/g, ""); // strip stray special chars from LLM
+  const cleaned = summary.replace(/[`#*]/g, ""); 
   const lines = cleaned.split("\n");
 
   return (
@@ -83,7 +83,7 @@ export default function App() {
     if (!file) return;
 
     setVideoFile(file);
-    setYoutubeUrl(""); // clear URL since a file was picked
+    setYoutubeUrl("");
   };
 
 
@@ -103,16 +103,14 @@ export default function App() {
     let res;
 
     if (videoFile) {
-      // ---- FILE UPLOAD CASE → hits /upload-file ----
       const formData = new FormData();
-      formData.append("video", videoFile); // key must match multer's upload.single("video")
+      formData.append("video", videoFile);
 
       res = await fetch(`${API_BASE}/upload-file`, {
         method: "POST",
-        body: formData, // no Content-Type header — browser sets multipart boundary automatically
+        body: formData,
       });
     } else {
-      // ---- URL UPLOAD CASE → hits /upload ----
       res = await fetch(`${API_BASE}/upload`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,7 +125,7 @@ export default function App() {
         style: { background: "#228B22", color: "#fff" },
       });
       setYoutubeUrl("");
-      setVideoFile(null); // reset the picked file too
+      setVideoFile(null);
       setHasUploaded(true);
     } else {
       toast.error(data.message || "Invalid video or URL!");
@@ -148,7 +146,6 @@ export default function App() {
   const handleAsk = async () => {
     if (!question.trim()) return;
     setAsking(true);
-    // setMessages([]);
 
     try {
       const res = await fetch(`${API_BASE}/query`, {
@@ -173,7 +170,7 @@ export default function App() {
         },
       ]);
 
-      setQuestion(""); // Clear the input after sending
+      setQuestion("");
     } catch (err) {
       (setMessages((prev) => [
         ...prev,
@@ -187,7 +184,6 @@ export default function App() {
       setAsking(false);
     }
   };
-  // const isActive = !!videoFile && !!youtubeUrl;
 
   return (
     <>
@@ -202,17 +198,13 @@ export default function App() {
           Summarize videos • Ask questions • Learn faster
         </p>
       </div>
-{/* //{`fixed left-0 right-0 z-50 flex justify-center p-4 bg-white
-                transition-all duration-500 ease-out
-                ${isActive ? 'top-24' : 'top-1/2 -translate-y-1/2'}`} ,,
-                flex sticky top-24 p-4 justify-center m-5 bg-white z-50*/}
+
       <div>
       
         <div className={`fixed left-0 right-0 z-50 flex justify-center p-4 bg-white
                 transition-all duration-500 ease-out
                  ${hasUploaded ? 'top-24' : 'top-1/2 -translate-y-1/2'}`}>
           <div className="relative">
-            {/* Hidden file input */}
             <input
               type="file"
               accept="video/*"
@@ -221,7 +213,6 @@ export default function App() {
               className="hidden"
             />
 
-            {/* + button opens file picker */}
             <button
               type="button"
               onClick={handlePlusClick}
@@ -230,7 +221,7 @@ export default function App() {
               +
             </button>
 
-            {/* Same input shows either the URL or the picked file's name */}
+            
             <input
               className="border border-gray-300 p-2 pl-10 rounded placeholder:text-gray-400 font-sans w-190"
               type="text"
@@ -238,9 +229,9 @@ export default function App() {
               value={videoFile ? videoFile.name : youtubeUrl}
               onChange={(e) => {
                 setYoutubeUrl(e.target.value);
-                setVideoFile(null); // typing manually clears any picked file
+                setVideoFile(null);
               }}
-              readOnly={!!videoFile} // prevent editing the filename text directly
+              readOnly={!!videoFile}
             />
           </div>
 
@@ -288,7 +279,6 @@ export default function App() {
               ) : (
                 <img src="/send.png" alt="Send" className="w-10 h-10" />
               )}
-              {/* {asking ? "ASKING..." : "ASK"} */}
             </button>
           </div>
         </div>
@@ -302,12 +292,10 @@ export default function App() {
                 }`}
               >
                 <div
-                  className={` px-4 py-2 font-sans rounded-2xl max-w-[70%] ${
-                    msg.type === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-black"
-                  }`}
-                >
+        className={`px-4 py-2 font-sans rounded-2xl max-w-[70%] ${
+          msg.type === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+        } ${editingIndex === index ? "ring-2 ring-yellow-400" : ""}`}   
+      >
                   {msg.text}
                 </div>
               </div>
@@ -348,11 +336,6 @@ export default function App() {
         className="fixed bottom-24 left-30 w-80 h-80 z-40"
       />
       
-       {/* <img
-        src="/online-training.png"
-        alt="girlyy"
-        className="fixed top-50 right-50 w-50 h-50 z-40"
-      /> */}
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </>
   );
