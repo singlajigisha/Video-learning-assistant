@@ -47,15 +47,13 @@ function extractAudioFromVideo(videoPath) {
 // Download audio from YouTube
 async function downloadAudio(youtubeUrl, videoId) {
   const tempDir = ensureTempDir();
-
   const outputTemplate = path.join(tempDir, `${videoId}.%(ext)s`);
 
   await ytdlp(youtubeUrl, {
     extractAudio: true,
     audioFormat: "mp3",
     output: outputTemplate,
-    cookies: path.join(process.cwd(), "cookies.txt"),
-    
+    extractorArgs: "youtubepot-bgutilhttp:base_url=http://127.0.0.1:4416",
   });
 
   return path.join(tempDir, `${videoId}.mp3`);

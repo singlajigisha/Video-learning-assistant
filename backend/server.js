@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { spawn } from "child_process";
 import express from 'express';
 import { ingestVideo , ingestUploadedVideo} from './main.js';
 import multer from 'multer';
@@ -20,6 +21,12 @@ const upload = multer({
   dest: 'temp/',
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB cap, adjust as needed
 });
+
+const potProvider = spawn("bgutil-pot-provider", [], {
+  detached: true,
+  stdio: "ignore",
+});
+potProvider.unref();
 
 // ---- Upload/ingest a video ----
 app.post('/api/videos/upload', async (req, res) => {
