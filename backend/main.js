@@ -1,6 +1,7 @@
 import { YoutubeTranscript } from "youtube-transcript";
 import { SentenceSplitter } from "llamaindex";
-import { OllamaEmbedding } from "@llamaindex/ollama";
+// import { OllamaEmbedding } from "@llamaindex/ollama";
+
 import { saveChunks } from "./storage.js";
 import { callGroq } from "./query.js";
 import { downloadAudio , extractAudioFromVideo } from "./audio.js";
@@ -8,9 +9,33 @@ import { downloadAudio , extractAudioFromVideo } from "./audio.js";
 import { transcribeAudio } from "./transcribeAudio.js";
 import fs from "fs";
 
-const embedModel = new OllamaEmbedding({
-  model: "nomic-embed-text",
-});
+// const embedModel = new OllamaEmbedding({
+//   model: "nomic-embed-text",
+// });
+const embedModel = {
+  async getTextEmbedding(text) {
+    const response = await fetch("https://ollama.com/api/embed", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "nomic-embed-text",
+        input: text,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
+    }
+
+    const data = await response.json();
+    return data.embeddings[0];
+  },
+};
+
 
 // -------------------------
 // Chunk Transcript (caption path — has timestamps)

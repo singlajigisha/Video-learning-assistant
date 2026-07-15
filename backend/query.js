@@ -1,12 +1,32 @@
 import 'dotenv/config';
-import { OllamaEmbedding } from "@llamaindex/ollama";
 import { searchChunks } from "./storage.js";     
 import { Groq } from 'groq-sdk';                   
-// const question = "What is llm?";
+
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const embedModel = new OllamaEmbedding({
-    model: "nomic-embed-text"
-});
+const embedModel = {
+  async getTextEmbedding(text) {
+    const response = await fetch("https://ollama.com/api/embed", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "nomic-embed-text",
+        input: text,
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
+    }
+
+    const data = await response.json();
+    return data.embeddings[0];
+  },
+};
+
 
 
 // ---- Prompt banane ka function ----

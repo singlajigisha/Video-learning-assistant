@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { spawn } from "child_process";
+
 import express from 'express';
 import { ingestVideo , ingestUploadedVideo} from './main.js';
 import multer from 'multer';
@@ -21,17 +21,6 @@ const upload = multer({
   dest: 'temp/',
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB cap, adjust as needed
 });
-
-const potProvider = spawn("bgutil-pot-provider", [], {
-  detached: true,
-  stdio: "ignore",
-});
-potProvider.unref();
-potProvider.on("error", (err) => {
-  console.error("PO Token provider failed to start:", err.message);
-});
-console.log("PO Token provider spawn attempted");
-
 
 // ---- Upload/ingest a video ----
 app.post('/api/videos/upload', async (req, res) => {
@@ -55,11 +44,9 @@ app.post('/api/videos/upload', async (req, res) => {
       message: err.message || 'Something went wrong processing the video',
     });
   }
-  // for public video 
-
 });
 
-// ---- NEW: Upload/ingest a local video file ----
+
 app.post('/api/videos/upload-file', upload.single('video'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No file uploaded' });
