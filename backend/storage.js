@@ -1,12 +1,12 @@
 import client from "./connection.js";
 
-const COLLECTION_NAME = "youtube-transcripts";
+const COLLECTION_NAME = "video_transcripts";
 
 async function resetCollection() {
   try {
     await client.deleteCollection({ name: COLLECTION_NAME });
   } catch (err) {
-    // ignore error if collection does not exist yet
+    
   }
 
   return await client.getOrCreateCollection({
