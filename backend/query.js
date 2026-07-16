@@ -1,39 +1,8 @@
 import 'dotenv/config';
 import { searchChunks } from "./storage.js";     
 import { Groq } from 'groq-sdk';  
-// import { OllamaEmbedding } from "@llamaindex/ollama";
 import { GoogleGenAI } from "@google/genai"; 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-// const embedModel = new OllamaEmbedding({
-//   model: "nomic-embed-text",
-// });
-// const embedModel = {
-//   async getTextEmbedding(text) {
-//     const response = await fetch("https://ollama.com/api/embed", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
-//       },
-//       body: JSON.stringify({
-//         model: "nomic-embed-text",
-//         input: text,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       const errText = await response.text();
-//       throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
-//     }
-
-//     const data = await response.json();
-//     return data.embeddings[0];
-//   },
-// };
-
-
-
-// ---- Prompt banane ka function ----
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -79,17 +48,14 @@ Answer:`;
 // ---- Poora pipeline ek function mein ----
 export async function answerQuestion(question) {
     // 1. Question ka embedding
-    // const questionEmbedding = await embedModel.getTextEmbedding(question);
-     chunk.embedding = await generateEmbedding(question);
+  
+    const questionEmbedding = await generateEmbedding(question);
 
     // 2. Similarity search
     const result = await searchChunks(questionEmbedding);
-    // console.log("Search result:", result);
-    const chunks = result.documents[0];   // top 5 matching texts
+    
+    const chunks = result.documents[0];   
 
-    // console.log("Retrieved chunks:",chunks);
-
-    // chunks.forEach((c, i) => console.log(`  ${i + 1}. ${c.slice(0, 60)}...`));
 
     // 3. Prompt build karo
     const prompt = buildPrompt(question, chunks);

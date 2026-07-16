@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { YoutubeTranscript } from "youtube-transcript";
 import { SentenceSplitter } from "llamaindex";
-// import { OllamaEmbedding } from "@llamaindex/ollama";
 import { GoogleGenAI } from "@google/genai";
 import { saveChunks } from "./storage.js";
 import { callGroq } from "./query.js";
@@ -23,47 +22,6 @@ export async function generateEmbedding(text) {
 
     return response.embeddings[0].values;
 }
-// const embedModel = new OllamaEmbedding({
-//   model: "nomic-embed-text",
-// });
-// const embedModel = {
-//   async getTextEmbedding(text) {
-//     console.log("OLLAMA_API_KEY exists:", !!process.env.OLLAMA_API_KEY);
-//     console.log(
-//       "OLLAMA_API_KEY preview:",
-//       process.env.OLLAMA_API_KEY
-//         ? process.env.OLLAMA_API_KEY.substring(0, 10) + "..."
-//         : "Not Found"
-//     );
-//     const response = await fetch("http://localhost:11434/api/embed", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
-//       },
-      
-//       body: JSON.stringify({
-//         model: "embeddinggemma",
-//         input: text,
-//       }),
-//     });
-//         console.log("Response Status:", response.status);
-//     console.log("Response Status Text:", response.statusText);
-
-//     if (!response.ok) {
-//       const errText = await response.text();
-  
-//   console.log("Response Body:", errText);
-
-//       throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
-//     }
-
-//     const data = await response.json();
-//     return data.embeddings[0];
-//   },
-// };
-
-
 // -------------------------
 // Chunk Transcript (caption path — has timestamps)
 // -------------------------
@@ -170,25 +128,14 @@ Instructions:
 4. Do NOT include any explanations, descriptions, summaries, or body text.
 5. keep each point in next line
 6. Do Not use any special characters like #,@
+7. IMPORTANT: Do not copy the example format below literally — it only shows the STRUCTURE/INDENTATION style. Replace it entirely with real topics from the content.
 
-Output Format:
+Example structure (for formatting reference ONLY — do not reuse this text):
+<Topic Name>
+- <Subtopic>
+  - <Nested detail>
 
- Main Heading 1
-- Subheading 1.1
-  - Subheading 1.1.1
-- Subheading 1.2
-next line
-
- Main Heading 2
-- Subheading 2.1
-- Subheading 2.2
-next line
-
- Main Heading 3
-- Subheading 3.1
-
-Only output the outline. Do not include introductions, conclusions, notes, or any additional text.
-
+Now generate the outline using ONLY the real content below:
 
 Context:
 

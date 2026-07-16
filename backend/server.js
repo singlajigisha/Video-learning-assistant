@@ -1,5 +1,4 @@
 import 'dotenv/config';
-
 import express from 'express';
 import { ingestVideo , ingestUploadedVideo} from './main.js';
 import multer from 'multer';
@@ -97,7 +96,6 @@ app.get('/api/videos/summary', async (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to generate summary' });
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
