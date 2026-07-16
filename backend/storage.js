@@ -1,9 +1,5 @@
 import client from "./connection.js";
 
-// const collection = await client.getOrCreateCollection({
-//     name: "youtube-transcripts",
-
-// });
 const COLLECTION_NAME = "youtube-transcripts";
 
 async function resetCollection() {
@@ -31,11 +27,7 @@ export async function saveChunks(chunks) {
   const result = await collection.get({
     include: ["documents", "embeddings"],
   });
-  // console.log("Stored ids:", result.ids);
-  // console.log("Stored chunks:", count);
-
-  // console.log("Stored documents:", result.documents.length);
-  // console.log("Embedding dimensions:", result.embeddings.map(e => e.length));
+  
 }
 export async function searchChunks(queryEmbedding, limit = 5) {
   const collection = await client.getOrCreateCollection({
@@ -47,6 +39,4 @@ export async function searchChunks(queryEmbedding, limit = 5) {
   });
   return result;
 }
-// const collections = await client.listCollections();
 
-// console.log(collections);

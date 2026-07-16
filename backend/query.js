@@ -1,35 +1,53 @@
 import 'dotenv/config';
 import { searchChunks } from "./storage.js";     
-import { Groq } from 'groq-sdk';                   
-
+import { Groq } from 'groq-sdk';  
+// import { OllamaEmbedding } from "@llamaindex/ollama";
+import { GoogleGenAI } from "@google/genai"; 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const embedModel = {
-  async getTextEmbedding(text) {
-    const response = await fetch("https://ollama.com/api/embed", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "nomic-embed-text",
-        input: text,
-      }),
-    });
+// const embedModel = new OllamaEmbedding({
+//   model: "nomic-embed-text",
+// });
+// const embedModel = {
+//   async getTextEmbedding(text) {
+//     const response = await fetch("https://ollama.com/api/embed", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
+//       },
+//       body: JSON.stringify({
+//         model: "nomic-embed-text",
+//         input: text,
+//       }),
+//     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
-    }
+//     if (!response.ok) {
+//       const errText = await response.text();
+//       throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
+//     }
 
-    const data = await response.json();
-    return data.embeddings[0];
-  },
-};
+//     const data = await response.json();
+//     return data.embeddings[0];
+//   },
+// };
 
 
 
 // ---- Prompt banane ka function ----
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+export async function generateEmbedding(text) {
+  const response = await ai.models.embedContent({
+    model: "gemini-embedding-001",
+    contents: text,
+  });
+
+  return response.embeddings[0].values;
+}
+
 function buildPrompt(question, chunks) {
     const context = chunks.join("\n\n");
 
@@ -61,7 +79,8 @@ Answer:`;
 // ---- Poora pipeline ek function mein ----
 export async function answerQuestion(question) {
     // 1. Question ka embedding
-    const questionEmbedding = await embedModel.getTextEmbedding(question);
+    // const questionEmbedding = await embedModel.getTextEmbedding(question);
+     chunk.embedding = await generateEmbedding(question);
 
     // 2. Similarity search
     const result = await searchChunks(questionEmbedding);

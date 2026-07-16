@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import { YoutubeTranscript } from "youtube-transcript";
 import { SentenceSplitter } from "llamaindex";
 // import { OllamaEmbedding } from "@llamaindex/ollama";
-
+import { GoogleGenAI } from "@google/genai";
 import { saveChunks } from "./storage.js";
 import { callGroq } from "./query.js";
 import { downloadAudio , extractAudioFromVideo } from "./audio.js";
@@ -9,32 +10,58 @@ import { downloadAudio , extractAudioFromVideo } from "./audio.js";
 import { transcribeAudio } from "./transcribeAudio.js";
 import fs from "fs";
 
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+});
+
+export async function generateEmbedding(text) {
+
+    const response = await ai.models.embedContent({
+        model: "gemini-embedding-001",
+        contents: text,
+    });
+
+    return response.embeddings[0].values;
+}
 // const embedModel = new OllamaEmbedding({
 //   model: "nomic-embed-text",
 // });
-const embedModel = {
-  async getTextEmbedding(text) {
-    const response = await fetch("https://ollama.com/api/embed", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "nomic-embed-text",
-        input: text,
-      }),
-    });
+// const embedModel = {
+//   async getTextEmbedding(text) {
+//     console.log("OLLAMA_API_KEY exists:", !!process.env.OLLAMA_API_KEY);
+//     console.log(
+//       "OLLAMA_API_KEY preview:",
+//       process.env.OLLAMA_API_KEY
+//         ? process.env.OLLAMA_API_KEY.substring(0, 10) + "..."
+//         : "Not Found"
+//     );
+//     const response = await fetch("http://localhost:11434/api/embed", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${process.env.OLLAMA_API_KEY}`,
+//       },
+      
+//       body: JSON.stringify({
+//         model: "embeddinggemma",
+//         input: text,
+//       }),
+//     });
+//         console.log("Response Status:", response.status);
+//     console.log("Response Status Text:", response.statusText);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
-    }
+//     if (!response.ok) {
+//       const errText = await response.text();
+  
+//   console.log("Response Body:", errText);
 
-    const data = await response.json();
-    return data.embeddings[0];
-  },
-};
+//       throw new Error(`Ollama embedding failed: ${response.status} ${errText}`);
+//     }
+
+//     const data = await response.json();
+//     return data.embeddings[0];
+//   },
+// };
 
 
 // -------------------------
@@ -121,7 +148,8 @@ function getVideoId(url) {
 async function processChunksAndSummarize(chunks, title) {
   // Generate Embeddings
   for (const chunk of chunks) {
-    chunk.embedding = await embedModel.getTextEmbedding(chunk.text);
+    // chunk.embedding = await embedModel.getTextEmbedding(chunk.text);
+    chunk.embedding = await generateEmbedding(chunk.text);
   }
 
   // Store in ChromaDB
