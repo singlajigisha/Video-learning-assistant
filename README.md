@@ -11,7 +11,7 @@ An AI-powered application that transforms videos into an interactive learning ex
 - Ask questions about video content
 - Semantic search using embeddings
 - Fast and context-aware responses
-- Local vector storage with ChromaDB
+- hosted vector storage with cloud Chroma
 
 ## 🛠 Tech Stack
 
@@ -34,6 +34,14 @@ An AI-powered application that transforms videos into an interactive learning ex
 - YouTube Transcript API
 - yt-dlp
 - FFmpeg
+
+### 🔑 Environment Variables
+VITE_API_URL
+GROQ_API_KEY
+GEMINI_API_KEY
+CHROMA_API_KEY
+CHROMA_TENANT
+CHROMA_DATABASE
 
 ### Other Tools
 - Multer
