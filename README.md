@@ -28,7 +28,7 @@ An AI-powered application that transforms videos into an interactive learning ex
 - LlamaIndex
 
 ### Vector Database
-- ChromaDB (Local)
+- Cloud ChromaDB(hosted db)
 
 ### Media Processing
 - YouTube Transcript API
