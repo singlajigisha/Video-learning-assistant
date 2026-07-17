@@ -114,28 +114,33 @@ async function processChunksAndSummarize(chunks, title) {
   await saveChunks(chunks);
 
   // Generate Summary
-  const summaryPrompt = `You are an expert at analyzing transcripts and extracting their structure.
+  const summaryPrompt = `You are an expert at understanding video transcripts and writing clear, natural summaries.
 
-Your task is to generate a hierarchical outline of the provided content.
+Your task is to write a flowing SUMMARY of the video content — like a crux/overview someone would read to understand what the video is about, NOT an outline or index.
 
 Instructions:
-1. Read the entire content carefully.
-2. Identify the main topics discussed.
-3. Organize them into:
-   - Main Headings
-   - Subheadings
-   - Nested Subheadings (if applicable)
-4. Do NOT include any explanations, descriptions, summaries, or body text.
-5. keep each point in next line
-6. Do Not use any special characters like #,@
-7. IMPORTANT: Do not copy the example format below literally — it only shows the STRUCTURE/INDENTATION style. Replace it entirely with real topics from the content.
 
-Example structure (for formatting reference ONLY — do not reuse this text):
-<Topic Name>
-- <Subtopic>
-  - <Nested detail>
+1. Read and understand the entire video transcript/content carefully.
+2. Write a natural, flowing summary in paragraph form (2,3 paragraphs depending on content length) that captures the core message, main ideas, and overall narrative of the video — as if explaining it to a friend who hasn't watched it.
+3. Do NOT break the summary into headings, topic titles, or sections. Just write connected paragraphs that read naturally, one idea flowing into the next.
+4. Do NOT use bullet points, numbering, or dashes anywhere in the paragraph section.
+5. After the paragraph summary, add a final section titled exactly: Key Topics Covered
+6. Under that final heading, list only the important topics/themes discussed in the video as short bullet points (2-8 words each), prefixed with a dash "-". This is the ONLY place bullet points should appear in your entire response.
+7. Keep language simple, clear, and beginner-friendly throughout.
+8. Do not use special characters like #, @, *, or markdown symbols.
+9. Do not copy the example structure below literally — it only shows the FORMAT.
 
-Now generate the outline using ONLY the real content below:
+Example structure (formatting reference ONLY, do not reuse this text):
+This video explores [core idea]. It begins by discussing [point], then moves into [point], illustrating this with [example]. The speaker emphasizes [key takeaway] and connects it to [broader point].
+
+In the latter half, the video shifts to [topic], explaining how [detail]. This ties back to the central idea that [conclusion].
+
+Key Topics Covered
+- Topic one
+- Topic two
+- Topic three
+
+Now generate the summary using ONLY the real content below:
 
 Context:
 
